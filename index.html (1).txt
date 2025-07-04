@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UiPath: The AI-First Agentic Automation Opportunity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+        .slide-content {
+            max-width: 1000px;
+            width: 100%;
+        }
+        .bg-gradient-dark {
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            color: white;
+        }
+        .kpi-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #32DFF0;
+        }
+        .kpi-label {
+            font-size: 1rem;
+            color: #cbd5e1;
+        }
+        .nav-button {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        #prevBtn { left: 20px; }
+        #nextBtn { right: 20px; }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 80vw;
+            max-width: 600px;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #4B5563;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0048E5;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .financial-table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 1rem;
+        }
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem; /* Smaller font for dense tables */
+            color: #334155;
+        }
+        .financial-table th, .financial-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            text-align: right;
+            white-space: nowrap; /* Prevent wrapping in cells */
+        }
+        .financial-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            text-align: center;
+        }
+        .financial-table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .financial-table tbody tr:hover {
+            background-color: #e2e8f0;
+        }
+        .financial-table .highlight-row {
+            font-weight: 700;
+            background-color: #e0f2fe; /* Light blue for FCF rows */
+        }
+        .financial-table .summary-row {
+            font-weight: 700;
+            background-color: #d0e7ff; /* Slightly darker blue for summary */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container" id="slide-container">
+
+        <!-- Slide 1: Title -->
+        <div class="slide bg-gradient-dark">
+            <div class="slide-content space-y-4">
+                <h1 class="text-5xl md:text-7xl font-black text-white drop-shadow-lg">Powering the Autonomous Enterprise</h1>
+                <p class="text-xl md:text-2xl text-slate-300">UiPath: The AI-First Agentic Automation Opportunity</p>
+                <div class="text-6xl pt-8 animate-pulse">🧠✨🤖</div>
+                <p class="text-md text-slate-400 mt-4">Discover how UiPath, with its deep enterprise roots, is leading the next wave of automation.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: AI Agent Revolution -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">The Future is Autonomous.</h2>
+                <p class="mt-2 text-lg text-slate-500">AI Agents are transforming business at scale.</p>
+                <div class="chart-container h-[50vh]">
+                    <canvas id="marketGrowthChart"></canvas>
+                </div>
+                <p class="mt-4 text-md text-slate-600">This chart illustrates the explosive growth of the AI-Powered Enterprise Automation Market, a generational opportunity, driven by agents that perceive, reason, and act autonomously.</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: AI-First Platform -->
+        <div class="slide bg-slate-50">
+            <div class="slide-content">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">Architecting Autonomy</h2>
+                 <p class="mt-2 text-lg text-slate-500">UiPath's integrated AI-first platform.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6 bg-white rounded-xl shadow-lg">
+                        <p class="text-5xl mb-2">🛠️</p>
+                        <h3 class="font-bold text-xl text-slate-700">Agent Builder</h3>
+                        <p class="text-sm text-slate-500">Create Custom AI Agents</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-lg">
+                         <p class="text-5xl mb-2">🕹️</p>
+                        <h3 class="font-bold text-xl text-slate-700">Maestro Orchestrator</h3>
+                        <p class="text-sm text-slate-500">Intelligent Control Center</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-lg">
+                         <p class="text-5xl mb-2">🤖</p>
+                        <h3 class="font-bold text-xl text-slate-700">Autopilot</h3>
+                        <p class="text-sm text-slate-500">AI-Powered Assistance</p>
+                    </div>
+                </div>
+                 <div class="mt-8 p-4 bg-blue-100 border-l-4 border-blue-500 rounded-lg">
+                    <p class="font-bold text-blue-800">Real Impact: Johnson Controls achieved 500% ROI & saved 18,000 hours annually.</p>
+                </div>
+                <p class="mt-4 text-md text-slate-600">Leveraging its existing enterprise infrastructure, UiPath's core components empower businesses to build, orchestrate, and leverage intelligent AI agents for significant ROI.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Unrivaled Leadership -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">The UiPath Advantage</h2>
+                <p class="mt-2 text-lg text-slate-500">Proven leadership and open innovation.</p>
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="text-center"><p class="text-6xl">🏆</p><p class="mt-2 font-semibold">7x Gartner MQ Leader</p></div>
+                    <div class="text-center"><p class="text-6xl">🧩</p><p class="mt-2 font-semibold">Comprehensive Platform</p></div>
+                    <div class="text-center"><p class="text-6xl">🤝</p><p class="mt-2 font-semibold">Strategic Partnerships</p></div>
+                    <div class="text-center"><p class="text-6xl">🛡️</p><p class="mt-2 font-semibold">Enterprise Governance</p></div>
+                </div>
+                <p class="mt-8 text-md text-slate-600">UiPath's established market leadership and comprehensive platform provide a unique foundation for driving AI adoption across large enterprises.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Market Opportunity -->
+        <div class="slide bg-slate-50">
+            <div class="slide-content">
+                 <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">Untapped Potential</h2>
+                 <p class="mt-2 text-lg text-slate-500">Seizing a generational market shift.</p>
+                 <div class="chart-container h-[50vh]">
+                    <canvas id="tamComparisonChart"></canvas>
+                 </div>
+                 <p class="mt-4 text-md text-slate-600">The AI-Powered Enterprise Automation market offers explosive growth, far outpacing hyperautomation, and UiPath's existing enterprise presence positions it to capture significant share.</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Financial Powerhouse -->
+        <div class="slide bg-gradient-dark">
+            <div class="slide-content">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-white">Financial Momentum</h2>
+                 <p class="mt-2 text-lg text-slate-300">Strong growth, profitability, and cash.</p>
+                <div class="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    <div class="kpi-card"><p class="kpi-label">ARR</p><p class="kpi-value">$1.7B</p><p class="text-sm font-semibold text-green-400">+12% YoY</p></div>
+                    <div class="kpi-card"><p class="kpi-label">Gross Margin</p><p class="kpi-value">84%</p><p class="text-sm font-semibold text-green-400">Best-in-Class</p></div>
+                    <div class="kpi-card"><p class="kpi-label">Free Cash Flow</p><p class="kpi-value">$117M</p><p class="text-sm font-semibold text-green-400">Q1 FY26</p></div>
+                    <div class="kpi-card"><p class="kpi-label">Cash on Hand</p><p class="kpi-value">$1.6B</p><p class="text-sm font-semibold text-green-400">No Debt</p></div>
+                    <div class="kpi-card"><p class="kpi-label">DBNRR</p><p class="kpi-value">108%</p><p class="text-sm font-semibold text-green-400">Sticky Platform</p></div>
+                </div>
+                <p class="mt-8 text-md text-slate-300">Robust financials, including high margins and strong cash flow, underpin a rapidly expanding business and enable continued investment in AI innovation.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Long-Term Vision -->
+        <div class="slide">
+             <div class="slide-content">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">Multi-Billion Dollar Trajectory</h2>
+                <p class="mt-2 text-lg text-slate-500">Projected growth unlocking substantial shareholder value.</p>
+                <div class="chart-container h-[50vh]">
+                    <canvas id="revenueProjectionChart"></canvas>
+                </div>
+                <p class="mt-4 text-md text-slate-600">Illustrative projections show significant revenue and profit expansion by 2034, driven by UiPath's ability to capture the burgeoning AI-Powered Enterprise Automation market through its existing customer base.</p>
+             </div>
+        </div>
+        
+        <!-- Slide 8: Risks & Mitigation -->
+        <div class="slide bg-slate-50">
+            <div class="slide-content">
+                 <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">Navigating the Future</h2>
+                 <p class="mt-2 text-lg text-slate-500">Resiliency through proactive strategy.</p>
+                 <div class="mt-12 p-8 bg-white rounded-2xl shadow-xl flex items-center gap-8">
+                     <div class="text-8xl text-blue-500">🛡️</div>
+                     <div class="text-left flex-1 grid grid-cols-2 gap-x-8 gap-y-4">
+                         <div><h3 class="font-bold text-red-600">Risks:</h3><p class="text-slate-600">Competition, Macro, Execution, Ethics</p></div>
+                         <div><h3 class="font-bold text-green-600">Mitigation:</h3><p class="text-slate-600">Leadership, Innovation, Security, Partnerships</p></div>
+                     </div>
+                 </div>
+                 <p class="mt-8 text-md text-slate-600">UiPath actively addresses key challenges through strategic leadership and robust platform capabilities, leveraging its enterprise experience to ensure sustained market leadership.</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Valuation Methodology: Scenario 1 -->
+        <div class="slide bg-slate-100">
+            <div class="slide-content">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-slate-800">Valuation Methodology: Scenario 1</h2>
+                <p class="mt-2 text-lg text-slate-600">15% Market Share & 30% Operating Margins by 2034.</p>
+                <div class="financial-table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Metric (in Billions USD)</th>
+                                <th>2024 (Actual)</th>
+                                <th>2025</th>
+                                <th>2030</th>
+                                <th>2034</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Revenue</td><td>$1.31</td><td>$1.45</td><td>$6.11</td><td>$19.38</td></tr>
+                            <tr><td>Operating Margin</td><td>16.3%</td><td>18.0%</td><td>26.0%</td><td>30.0%</td></tr>
+                            <tr><td>EBIT (Operating Income)</td><td>$0.21</td><td>$0.26</td><td>$1.59</td><td>$5.81</td></tr>
+                            <tr><td>NOPAT</td><td>$0.17</td><td>$0.21</td><td>$1.26</td><td>$4.59</td></tr>
+                            <tr class="highlight-row"><td>Free Cash Flow (FCF)</td><td>$0.34</td><td>$0.19</td><td>$1.16</td><td>$4.25</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 text-left text-slate-700">
+                    <p class="font-bold">Key Valuation Outcomes:</p>
+                    <ul class="list-disc list-inside ml-4 text-sm">
+                        <li>Terminal Value: $79.27 Billion</li>
+                        <li>PV of Terminal Value: $36.69 Billion</li>
+                        <li>Sum of PV of FCFs: $8.06 Billion</li>
+                        <li>Enterprise Value: $44.75 Billion</li>
+                        <li class="bg-blue-100 p-2 rounded-lg my-2 font-semibold list-none">Equity Value: <span class="font-extrabold text-blue-800 text-lg">$46.45 Billion</span></li>
+                        <li class="bg-blue-100 p-2 rounded-lg my-2 font-semibold list-none">Price Per Share: <span class="font-extrabold text-blue-800 text-lg">$86.82</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Valuation Methodology: Scenario 2 -->
+        <div class="slide bg-slate-100">
+            <div class="slide-content">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-slate-800">Valuation Methodology: Scenario 2</h2>
+                <p class="mt-2 text-lg text-slate-600">20% Market Share & 35% Operating Margins by 2034.</p>
+                <div class="financial-table-container">
+                    <table class="financial-table">
+                        <thead>
+                            <tr>
+                                <th>Metric (in Billions USD)</th>
+                                <th>2024 (Actual)</th>
+                                <th>2025</th>
+                                <th>2030</th>
+                                <th>2034</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Revenue</td><td>$1.31</td><td>$1.45</td><td>$6.61</td><td>$21.94</td></tr>
+                            <tr><td>Operating Margin</td><td>16.3%</td><td>18.0%</td><td>30.5%</td><td>35.0%</td></tr>
+                            <tr><td>EBIT (Operating Income)</td><td>$0.21</td><td>$0.26</td><td>$2.01</td><td>$7.68</td></tr>
+                            <tr><td>NOPAT</td><td>$0.17</td><td>$0.21</td><td>$1.59</td><td>$6.07</td></tr>
+                            <tr class="highlight-row"><td>Free Cash Flow (FCF)</td><td>$0.34</td><td>$0.19</td><td>$1.48</td><td>$5.68</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 text-left text-slate-700">
+                    <p class="font-bold">Key Valuation Outcomes:</p>
+                    <ul class="list-disc list-inside ml-4 text-sm">
+                        <li>Terminal Value: $105.82 Billion</li>
+                        <li>PV of Terminal Value: $48.97 Billion</li>
+                        <li>Sum of PV of FCFs: $10.39 Billion</li>
+                        <li>Enterprise Value: $59.36 Billion</li>
+                        <li class="bg-blue-100 p-2 rounded-lg my-2 font-semibold list-none">Equity Value: <span class="font-extrabold text-blue-800 text-lg">$61.06 Billion</span></li>
+                        <li class="bg-blue-100 p-2 rounded-lg my-2 font-semibold list-none">Price Per Share: <span class="font-extrabold text-blue-800 text-lg">$114.12</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Valuation -->
+        <div class="slide">
+             <div class="slide-content">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800">Valuation: A Compelling Entry</h2>
+                 <p class="mt-2 text-lg text-slate-500">Significant upside potential based on DCF analysis.</p>
+                <div class="chart-container h-[50vh]">
+                    <canvas id="valuationChart"></canvas>
+                </div>
+                 <p class="mt-4 text-slate-600">Current valuation appears modest, presenting a compelling entry point given UiPath's established market leadership, massive AI TAM, and strong balance sheet.</p>
+                 <button id="askAiBtn" class="mt-8 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">Ask the AI Analyst ✨</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Recommendation -->
+        <div class="slide bg-gradient-dark">
+            <div class="slide-content">
+                 <h2 class="text-5xl md:text-7xl font-black text-white drop-shadow-lg">A Strong Long-Term Buy</h2>
+                 <p class="mt-4 text-xl md:text-2xl text-slate-300">Capitalize on the Agentic AI Revolution.</p>
+                <div class="text-8xl pt-8 animate-bounce">🚀</div>
+                <p class="text-md text-slate-400 mt-4">Invest now to be part of the future of intelligent automation and unlock substantial long-term value, driven by UiPath's unique position in the enterprise AI landscape.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <button id="prevBtn" class="nav-button">&#10094;</button>
+    <button id="nextBtn" class="nav-button">&#10095;</button>
+
+    <div id="aiModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-button" id="closeModalBtn">&times;</button>
+            <h3 class="text-2xl font-bold text-slate-800 mb-4">Ask the AI Analyst ✨</h3>
+            <textarea id="aiQuestionInput" class="w-full p-3 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="e.g., What are the biggest risks for UiPath's growth?"></textarea>
+            <button id="submitAiQuestionBtn" class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300">Get Insight</button>
+            <div id="aiLoader" class="loader"></div>
+            <div id="aiResponse" class="mt-4 p-4 bg-gray-100 rounded-md text-left text-gray-700 min-h-[80px] overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script>
+        const slideContainer = document.getElementById('slide-container');
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const askAiBtn = document.getElementById('askAiBtn');
+        const aiModal = document.getElementById('aiModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const aiQuestionInput = document.getElementById('aiQuestionInput');
+        const submitAiQuestionBtn = document.getElementById('submitAiQuestionBtn');
+        const aiLoader = document.getElementById('aiLoader');
+        const aiResponse = document.getElementById('aiResponse');
+        let currentSlide = 0;
+
+        function updateButtons() {
+            prevBtn.style.display = currentSlide === 0 ? 'none' : 'flex';
+            nextBtn.style.display = currentSlide === slides.length - 1 ? 'none' : 'flex';
+        }
+
+        function goToSlide(slideIndex) {
+            if (slideIndex >= 0 && slideIndex < slides.length) {
+                slideContainer.style.transform = `translateX(-${slideIndex * 100}vw)`;
+                currentSlide = slideIndex;
+                updateButtons();
+            }
+        }
+
+        prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            } else if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            }
+        });
+
+        askAiBtn.addEventListener('click', () => {
+            aiModal.classList.remove('hidden');
+            aiQuestionInput.value = '';
+            aiResponse.textContent = '';
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            aiModal.classList.add('hidden');
+        });
+
+        submitAiQuestionBtn.addEventListener('click', async () => {
+            const prompt = aiQuestionInput.value.trim();
+            if (!prompt) {
+                aiResponse.textContent = 'Please enter a question.';
+                return;
+            }
+
+            aiLoader.style.display = 'block';
+            aiResponse.textContent = '';
+            submitAiQuestionBtn.disabled = true;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: `Based on the provided information about UiPath's investment opportunity, its market, financials, and general industry knowledge, answer the following question concisely: ${prompt}` }] });
+
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    aiResponse.textContent = text;
+                } else {
+                    aiResponse.textContent = 'Could not get a response from the AI. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                aiResponse.textContent = 'An error occurred while fetching the AI response. Please try again later.';
+            } finally {
+                aiLoader.style.display = 'none';
+                submitAiQuestionBtn.disabled = false;
+            }
+        });
+
+        updateButtons();
+        
+        const wrapLabel = (label, maxWidth = 16) => {
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            return Array.isArray(label) ? label.join(' ') : label;
+        };
+
+        new Chart(document.getElementById('marketGrowthChart'), {
+            type: 'line',
+            data: {
+                labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034'],
+                datasets: [{
+                    label: 'AI Automation Market Size ($B)',
+                    data: [20.24, 25, 32, 42, 55, 72, 94, 115, 125, 135.06],
+                    borderColor: '#0048E5',
+                    backgroundColor: 'rgba(0, 72, 229, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: value => `$${value}B` } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('tamComparisonChart'), {
+            type: 'bar',
+            data: {
+                labels: [wrapLabel('Hyperautomation Market (2034)'), wrapLabel('AI-Powered Enterprise Automation Market (2034)')],
+                datasets: [{
+                    label: 'Market Size ($B)',
+                    data: [270.63, 135.06],
+                    backgroundColor: ['#87F0FF', '#0048E5'],
+                    borderColor: ['#32DFF0', '#0038B3'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } },
+                scales: { x: { beginAtZero: true, ticks: { callback: value => `$${value}B` } } }
+            }
+        });
+
+        new Chart(document.getElementById('revenueProjectionChart'), {
+            type: 'line',
+            data: {
+                labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034'],
+                datasets: [{
+                    label: 'Projected Revenue ($B)',
+                    data: [1.45, 1.81, 2.36, 3.14, 4.27, 5.93, 8.41, 12.19, 18.05, 27.25],
+                    borderColor: '#00C2E5',
+                    backgroundColor: 'rgba(0, 194, 229, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#0048E5'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: value => `$${value}B` } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+        
+        new Chart(document.getElementById('valuationChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Current Price', wrapLabel('DCF Target (Low)'), wrapLabel('DCF Target (High)')],
+                datasets: [{
+                    label: 'Share Price ($)',
+                    data: [12.85, 86.82, 114.12],
+                    backgroundColor: ['#cbd5e1', '#87F0FF', '#0048E5'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                 plugins: { legend: { display: false }, tooltip: { callbacks: { title: tooltipTitleCallback } } },
+                scales: { y: { beginAtZero: true, ticks: { callback: value => `$${value}` } } }
+            }
+        });
+
+    </script>
+</body>
+</html>
